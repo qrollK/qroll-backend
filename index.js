@@ -20,6 +20,7 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
+app.use("/api", require("./routes/auth")); // or your auth file name
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/session', require('./routes/session'));
 app.use('/api/attendance', require('./routes/attendance'));
