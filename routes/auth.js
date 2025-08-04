@@ -6,16 +6,17 @@ const router = express.Router();
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// Google Login
+// POST /api/auth/google
 router.post('/google', async (req, res) => {
   const { token } = req.body;
+
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-    const { sub, name, email } = ticket.getPayload();
 
+    const { sub, name, email } = ticket.getPayload();
     let user = await User.findOne({ googleId: sub });
     let isNewUser = false;
 
@@ -24,23 +25,25 @@ router.post('/google', async (req, res) => {
       isNewUser = true;
     }
 
-    const jwtToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
-    });
+    const jwtToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     res.json({
       token: jwtToken,
       user,
       isNewUser,
-      role: user.role,
     });
+
   } catch (err) {
-    console.error('Google auth error:', err);
-    res.status(401).json({ error: 'Invalid Google Token' });
+    console.error('❌ Google auth error:', err);
+    res.status(401).json({ error: 'Invalid Google token' });
   }
 });
 
-// Set Role after Login
+// POST /api/auth/set-role
 router.post('/set-role', async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ error: "Unauthorized" });
@@ -65,7 +68,7 @@ router.post('/set-role', async (req, res) => {
 
     res.json({ user, token: newToken });
   } catch (err) {
-    console.error('Set role error:', err);
+    console.error('❌ Set role error:', err);
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 });
