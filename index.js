@@ -13,6 +13,7 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/session', require('./routes/session'));
 app.use('/api/attendance', require('./routes/attendance'));
+app.use("/auth", authRoutes);
 
 
 // DB Connect
