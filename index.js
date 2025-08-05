@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const studentRoutes = require('./routes/student'); // ✅ import student routes
 
 dotenv.config();
 const app = express();
@@ -19,11 +20,11 @@ app.use(cors({
 
 app.use(express.json());
 
-// Routes
-app.use("/api", require("./routes/auth")); // or your auth file name
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/session', require('./routes/session'));
-app.use('/api/attendance', require('./routes/attendance'));
+// ✅ Routes
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/session", require("./routes/session"));
+app.use("/api/attendance", require("./routes/attendance"));
+app.use("/api/student", studentRoutes); // ✅ mount student onboarding route here
 
 // MongoDB Connect
 mongoose.connect(process.env.MONGO_URI)
