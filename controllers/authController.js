@@ -20,7 +20,15 @@ const googleLogin = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.json({ token: jwtToken, role, name });
+    res.json({
+      token: jwtToken,
+      user: {
+        name,
+        email,
+        picture,
+        role,
+      },
+    });
   } catch (err) {
     console.error("Google login error", err);
     res.status(401).json({ message: "Invalid Google token" });
