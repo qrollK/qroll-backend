@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const studentRoutes = require('./routes/student');
-const sessionRoutes = require('./routes/sessions');
+const sessionRoutes = require('./routes/session');
 
 dotenv.config();
 const app = express();
