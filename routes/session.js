@@ -3,6 +3,7 @@ const Session = require('../models/Session');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+// ✅ Auth middleware
 function authMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   try {
@@ -14,11 +15,12 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// Generate a random 6-digit token
+// ✅ Generate a random 6-digit token
 function generateToken() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+// ✅ Create new session
 router.post('/create', authMiddleware, async (req, res) => {
   const { title, location, expiresAt } = req.body;
 
@@ -34,16 +36,30 @@ router.post('/create', authMiddleware, async (req, res) => {
   res.json(session);
 });
 
-// Refresh QR token every time frontend polls
+// ✅ Rotate token (called by frontend every few seconds)
 router.get('/:id/token', authMiddleware, async (req, res) => {
   const session = await Session.findById(req.params.id);
   if (!session) return res.status(404).json({ error: 'Session not found' });
 
-  // Update token every 5s (simplified for demo)
   session.token = generateToken();
   await session.save();
 
   res.json({ token: session.token });
+});
+
+// ✅ NEW: Get active sessions
+router.get('/active', authMiddleware, async (req, res) => {
+  try {
+    const now = new Date();
+
+    // Find sessions that haven't expired
+    const sessions = await Session.find({ expiresAt: { $gte: now } });
+
+    res.json({ sessions });
+  } catch (err) {
+    console.error("Error fetching active sessions:", err);
+    res.status(500).json({ message: "Failed to fetch sessions" });
+  }
 });
 
 module.exports = router;

@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const studentRoutes = require('./routes/student'); // ✅ import student routes
+const studentRoutes = require('./routes/student');
+const sessionRoutes = require('./routes/sessions');
 
 dotenv.config();
 const app = express();
